@@ -1,92 +1,10 @@
-apply plugin: 'com.android.application'
-apply plugin: 'maven-publish'
-
-apply from: './VERSIONS.gradle'
-def accountPrefix = getAccountPrefix()
-def resourcePrefix = getResourcePrefix()
-
-// https://hackernoon.com/android-how-to-add-gradle-dependencies-using-foreach-c4cbcc070458
-def projDependencies = [
-    [configuration: "implementation", dependency: androidLibs.playServicesLocation],
-    [configuration: "implementation", dependency: androidLibs.supportCompat],
-    [configuration: "implementation", dependency: androidLibs.appcompat],
-    [configuration: "implementation", dependency: libs.permissions,
-        options: { exclude group: 'com.android.support', module: 'appcompat-v7'}],
-    [configuration: "implementation", dependency: libs.logback],
-    [configuration: "implementation", dependency: libs.slf4j],
-    [configuration: "implementation", dependency: libs.promise],
-]
-
-buildscript {
-    repositories {
-        maven {
-            url 'https://maven.google.com/'
-            name 'Google'
-        }
-        jcenter()
-        gradlePluginPortal()
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.4'
-
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-    }
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+plugins {
+    id 'com.android.application' version '7.2.2' apply false
+    id 'com.android.library' version '7.2.2' apply false
+    id 'org.jetbrains.kotlin.android' version '1.6.10' apply false
 }
 
-allprojects {
-    repositories {
-        maven {
-            url 'https://maven.google.com'
-        }
-        jcenter()
-    }
-}
-
-android {
-
-    compileSdkVersion project.ext.getCompileSdkVersion()
-    buildToolsVersion project.ext.getBuildToolsVersion()
-
-    // Tip: https://stackoverflow.com/questions/39987669/renamingdelegatingcontext-is-deprecated-how-do-we-test-sqlite-db-now/52170737#52170737
-    // Gradle automatically adds 'android.test.runner' as a dependency.
-
-    defaultConfig {
-        resValue "string", resourcePrefix + "account_name", 'Locations'
-        resValue "string", resourcePrefix + "account_type", accountPrefix + '.account'
-        resValue "string", resourcePrefix + "content_authority", accountPrefix + '.provider'
-        minSdkVersion project.ext.getMinSdkVersion()
-        versionCode 1
-        versionName "1.1.2"
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-
-    }
-
-    lintOptions {
-        abortOnError false
-    }
-
-
-}
-
-dependencies {
-    projDependencies.each {
-        add(it.configuration, it.dependency)
-    }
-
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
-}
-
-
-
-afterEvaluate {
-
+task clean(type: Delete) {
+    delete rootProject.buildDir
 }
